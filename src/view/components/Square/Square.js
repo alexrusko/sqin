@@ -1,19 +1,37 @@
-import React from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 
 import { useRotate } from '../../../hooks';
 import useStyles from './Square.styles';
 
-const Square = React.forwardRef((props, ref) => {
-    const classes = useStyles();
-    const { subscribeToRotate } = useRotate();
+const numberRegex = /-?\d+/;
 
-    //subscribeToRotate()
+const Square = ({ row, col }) => {
+    const classes = useStyles();
+    const { subscribeToPivot } = useRotate();
+    const squareRef = useRef(null)
+
+    const onRotateLeft = useCallback((pivotPoint) => {
+        const currentRotation = squareRef.current.style.transform.match(numberRegex)?.[0] || 0;
+        squareRef.current.style.transformOrigin = pivotPoint;
+        squareRef.current.style.transform = `rotate(${+currentRotation - 90}deg)`;
+    }, [squareRef]);
+
+    const onRotateRight = useCallback((pivotPoint) => {
+        const currentRotation = squareRef.current.style.transform.match(numberRegex)?.[0] || 0;
+        squareRef.current.style.transformOrigin = pivotPoint;
+        squareRef.current.style.transform = `rotate(${+currentRotation + 90}deg)`;
+    }, [squareRef]);
+    
+    useEffect(() => {
+        subscribeToPivot(onRotateLeft, onRotateRight, row, col)
+    }, [subscribeToPivot, onRotateLeft, onRotateRight, row, col]);
     
     return (
-        <div ref={ref} className={classes.square}>
+        <div ref={squareRef} className={classes.square}>
+            <span>{row}{col}</span>
             <div className={classes.dot} />
         </div>
     );
-});
+};
 
 export default Square;

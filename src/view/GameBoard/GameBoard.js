@@ -3,43 +3,48 @@ import Square from '../components/Square/Square';
 import Pivot from '../components/Pivot/Pivot';
 import useStyles from './GameBoard.styles';
 
-const createMatrix = () => {
-    const matrix = [];
+const createGameBoard = () => {
+    const board = [];
+    let index = 0;
     for (let i = 0; i < 5; i++) {
         const row = [];
         for (let j = 0; j < 5; j++) {
-            row[j] = 0;
+            row[j] = {
+                id: index,
+                row: i,
+                col: j,
+            };
+
+            index++;
         }
-        matrix[i] = row;
+        board[i] = row;
     }
 
-    return matrix;
+    return board;
 };
 
 const GameBoard = () => {
     const classes = useStyles();
-    const [board, setBoard] = useState(createMatrix());
-    const refs = useRef(board.map((row) => row.map(() => createRef())));
+    const [board, setBoard] = useState(createGameBoard());
+    console.log(board);
+    //const refs = useRef(board.map((row) => row.map(() => createRef())));
     
     return (
         <div className={classes.root}>
             {board.map((row, i) => (
                 row.map((col, j) => (
-                    <Square ref={refs.current[i][j]} key={j} />
+                    <Square
+                        row={i}
+                        col={j}
+                        key={j} />
                 ))
             ))}
             <Pivot
-                topLeft={refs.current[0][0]}
-                topRight={refs.current[0][1]}
-                bottomLeft={refs.current[1][0]}
-                bottomRight={refs.current[1][1]}
+               index={0}
             />
 
             <Pivot
-                topLeft={refs.current[0][1]}
-                topRight={refs.current[0][2]}
-                bottomLeft={refs.current[1][1]}
-                bottomRight={refs.current[1][2]}
+                index={1}
             />
         </div>
     );

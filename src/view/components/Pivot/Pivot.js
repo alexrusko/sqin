@@ -1,10 +1,19 @@
 import React from 'react';
+
+import { useRotate } from '../../../hooks';
 import useStyles from './Pivot.styles';
 
-const numberRegex = /-?\d+/;
-
-const Pivot = ({onClick}) => {
+const Pivot = ({index}) => {
     const classes = useStyles();
+    const { rotateRight, rotateLeft } = useRotate();
+
+    const onRotateRight = () => {
+        rotateRight(index);
+    };
+
+    const onRotateLeft = () => {
+        rotateLeft(index);
+    }
     
     /* const onRightClicked = () => {
         const currentRotationTopLeft = topLeft.current.style.transform.match(numberRegex)?.[0] || 0;
@@ -26,8 +35,9 @@ const Pivot = ({onClick}) => {
     }; */
     
     return (
-        <div className={classes.root} onClick={onClick}>
-            click
+        <div className={classes.root}>
+            <span onClick={onRotateLeft}>left</span>|
+            <span onClick={onRotateRight}>right</span>
         </div>
     );
 };
