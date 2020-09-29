@@ -7,11 +7,9 @@ import * as serviceWorker from './serviceWorker';
 import { RotateProvider } from './hooks';
 
 ReactDOM.render(
-  <React.StrictMode>
     <RotateProvider>
       <App />
-    </RotateProvider>
-  </React.StrictMode>,
+    </RotateProvider>,
   document.getElementById('root')
 );
 

@@ -1,51 +1,43 @@
-import React, { useEffect, useState, useRef, createRef } from 'react';
+import React, { useEffect } from 'react';
 import Square from '../components/Square/Square';
 import Pivot from '../components/Pivot/Pivot';
+import { useRotate } from '../../hooks';
 import useStyles from './GameBoard.styles';
-
-const createGameBoard = () => {
-    const board = [];
-    let index = 0;
-    for (let i = 0; i < 5; i++) {
-        const row = [];
-        for (let j = 0; j < 5; j++) {
-            row[j] = {
-                id: index,
-                row: i,
-                col: j,
-            };
-
-            index++;
-        }
-        board[i] = row;
-    }
-
-    return board;
-};
 
 const GameBoard = () => {
     const classes = useStyles();
-    const [board, setBoard] = useState(createGameBoard());
-    console.log(board);
-    //const refs = useRef(board.map((row) => row.map(() => createRef())));
+    const { gameBoard } = useRotate();
+
+    //const refs = useRef(gameBoard.map((row) => row.map(() => createRef())));
     
     return (
         <div className={classes.root}>
-            {board.map((row, i) => (
+            {gameBoard.map((row, i) => (
                 row.map((col, j) => (
                     <Square
-                        row={i}
-                        col={j}
-                        key={j} />
+                        index={col.id}
+                        key={col.id} />
                 ))
             ))}
-            <Pivot
-               index={0}
-            />
 
-            <Pivot
-                index={1}
-            />
+            <div className={classes.pivotContainer}>
+                <Pivot index={0}/>
+                <Pivot index={1}/>
+                <Pivot index={2}/>
+                <Pivot index={3}/>
+                <Pivot index={4}/>
+                <Pivot index={5}/>
+                <Pivot index={6}/>
+                <Pivot index={7}/>
+                <Pivot index={8}/>
+                <Pivot index={9}/>
+                <Pivot index={10}/>
+                <Pivot index={11}/>
+                <Pivot index={12}/>
+                <Pivot index={13}/>
+                <Pivot index={14}/>
+                <Pivot index={15}/>
+            </div>
         </div>
     );
 };

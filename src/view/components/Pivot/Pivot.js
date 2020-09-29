@@ -1,19 +1,23 @@
 import React from 'react';
+import clsx from  'clsx';
+import { KeyboardArrowRight as RightArrow } from '@material-ui/icons';
+import { KeyboardArrowLeft as LeftArrow } from '@material-ui/icons';
 
 import { useRotate } from '../../../hooks';
 import useStyles from './Pivot.styles';
 
-const Pivot = ({index}) => {
+const pivotMap =[
+    [0,0], [0,1], [0,2], [0,3],
+    [1,0], [1,1], [1,2], [1,3],
+    [2,0], [2,1], [2,2], [2,3],
+    [3,0], [3,1], [3,2], [3,3],
+];
+
+const Pivot = ({ index }) => {
     const classes = useStyles();
-    const { rotateRight, rotateLeft } = useRotate();
-
-    const onRotateRight = () => {
-        rotateRight(index);
-    };
-
-    const onRotateLeft = () => {
-        rotateLeft(index);
-    }
+    const { rotateLeft, rotateRight } = useRotate();
+    const row = pivotMap[index][0];
+    const col = pivotMap[index][1]
     
     /* const onRightClicked = () => {
         const currentRotationTopLeft = topLeft.current.style.transform.match(numberRegex)?.[0] || 0;
@@ -36,8 +40,16 @@ const Pivot = ({index}) => {
     
     return (
         <div className={classes.root}>
-            <span onClick={onRotateLeft}>left</span>|
-            <span onClick={onRotateRight}>right</span>
+            <div
+                className={ clsx(classes.rotateButton, classes.left) }
+                onClick={() => rotateLeft(row, col)}>
+                    <LeftArrow />
+            </div>
+            <div
+                className={ clsx(classes.rotateButton, classes.right) }
+                onClick={() => rotateRight(row, col)}>
+                    <RightArrow />
+            </div>
         </div>
     );
 };

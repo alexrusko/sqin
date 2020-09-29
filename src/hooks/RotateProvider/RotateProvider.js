@@ -1,75 +1,71 @@
 import React, { useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import RotateContext, { initialState } from './RotateContext';
 
-const rotate = () => {
+const createGameBoard = () => {
+    const board = [];
+    let id = 0;
+    for (let i = 0; i < 5; i++) {
+        const row = [];
+        for (let j = 0; j < 5; j++) {
+            row[j] = {
+                id,
+                row: i,
+                col: j,
+            };
 
-};
-
-const pivotMap = [
-    [[0,0], [0,1], [1,0], [1,1]],
-    [[0,1], [0,2], [1,1], [1,2]],
-    [[0,2], [0,3], [1,2], [1,3]],
-    [[0,3], [0,4], [1,3], [1,4]],
-    [[1,0], [1,1], [2,0], [2,1]],
-    [[1,1], [1,2], [2,1], [2,2]],
-    [[1,2], [1,3], [2,2], [2,3]],
-    [[1,3], [1,4], [2,3], [2,4]],
-    [[2,0], [2,1], [3,0], [3,1]],
-    [[2,1], [2,2], [3,1], [3,2]],
-    [[2,2], [2,3], [3,2], [3,3]],
-    [[2,3], [2,4], [3,3], [3,4]],
-    [[3,0], [3,1], [4,0], [4,1]],
-    [[3,1], [3,2], [4,1], [4,2]],
-    [[3,2], [3,3], [4,2], [4,3]],
-    [[3,3], [3,4], [4,3], [4,4]],
-]
-
-const getPivots = (row, col) => {
-    return pivotMap
-            .filter((pivot) => pivot.some((cords) => cords[0] === row && cords[1] === col))
-            .map((pivot) => pivotMap.indexOf(pivot));
-};
-
-const getPivotPoint = (index) => {
-    if (index === 0) {
-        return 'bottom right';
-    } else if (index === 1) {
-        return 'bottom left';
-    } else if (index === 2) {
-        return 'top right';
-    } else if (index === 3) {
-        return 'top left';
+            id++;
+        }
+        board[i] = row;
     }
+
+    return board;
 };
 
 const RotateProvider = ({ children }) => {
-    const [subcribers, setSubscribers] = useState({});
+    const [gameBoard, setGameBoard] = useState(createGameBoard());
 
-    const subscribeToPivot = useCallback((onRotateLeft, onRotateRight, row, col) => {
-        getPivots(row, col).forEach((pivot) => {
-            setSubscribers((prevState) => ({
-                ...prevState,
-                [pivot]: {
-                    left: [...(prevState[pivot]?.left || []), onRotateLeft],
-                    right: [...(prevState[pivot]?.right || []), onRotateRight]
-                },
-            }));
+    const rotateRight = useCallback((row, col) => {
+        setGameBoard((prevState) => {
+            const prevBoard = [...prevState];
+            for (let i = 0; i < prevBoard[0].length; i++) {
+                for (let j = 0; j < prevBoard[1].length; j++) {
+                    if (prevBoard[i][j].row === row && prevBoard[i][j].col === col) {
+                        const temp = prevBoard[i][j].id;
+                        prevBoard[i][j].id = prevBoard[i+1][j].id;
+                        prevBoard[i+1][j].id = prevBoard[i+1][j+1].id;
+                        prevBoard[i+1][j+1].id = prevBoard[i][j+1].id;
+                        prevBoard[i][j+1].id = temp;
+                        return prevBoard;
+                    }
+                }
+            }
         });
-    }, [setSubscribers]);
+    }, [setGameBoard]);
 
-    const rotateRight = useCallback((index) => {
-        subcribers[index].right.forEach((callback, i) => callback(getPivotPoint(i)));
-    }, [subcribers]);
-
-    const rotateLeft = useCallback((index) => {
-        subcribers[index].left.forEach((callback, i) => callback(getPivotPoint(i)));
-    }, [subcribers]);
+    const rotateLeft = useCallback((row, col) => {
+        setGameBoard((prevState) => {
+            const prevBoard = [...prevState];
+            for (let i = 0; i < prevBoard[0].length; i++) {
+                for (let j = 0; j < prevBoard[1].length; j++) {
+                    if (prevBoard[i][j].row === row && prevBoard[i][j].col === col) {
+                        const temp = prevBoard[i][j].id;
+                        prevBoard[i][j].id = prevBoard[i][j+1].id;
+                        prevBoard[i][j+1].id = prevBoard[i+1][j+1].id;
+                        prevBoard[i+1][j+1].id = prevBoard[i+1][j].id;
+                        prevBoard[i+1][j].id = temp;
+                        
+                        return prevBoard;
+                    }
+                }
+            }
+        });
+    }, [setGameBoard]);
 
     const ctx = useMemo(() => ({
-        subscribeToPivot,
+        gameBoard,
         rotateRight,
         rotateLeft,
-    }), [subscribeToPivot, rotateRight, rotateLeft]);
+    }), [gameBoard, rotateRight, rotateLeft]);
 
     return <RotateContext.Provider value={ctx}>{children}</RotateContext.Provider>
 }
